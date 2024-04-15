@@ -1,0 +1,20 @@
+def updateDCFWithNVIDIAData() {
+var apiKey = 'YOUR_API_KEY';
+  var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=NVDA&interval=15min&apikey=' + apiKey;
+  var response = UrlFetchApp.fetch(url);
+  var responseData = JSON.parse(response.getContentText());
+  var timeSeries = responseData['Time Series (15min)'];
+  var latestTimestamp = Object.keys(timeSeries)[0];
+  var latestData = timeSeries[latestTimestamp];
+  var latestFCF = parseFloat(latestData['4. close']);
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var fcfCell = sheet.getRange('B2');
+  fcfCell.setValue(latestFCF);
+}
+
+def onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('DCF Update')
+      .addItem('Update NVIDIA FCF', 'updateDCFWithNVIDIAData')
+      .addToUi();
+}
